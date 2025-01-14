@@ -15,6 +15,7 @@
             background: #000;
             overflow: hidden;
             position: relative;
+            user-select: none; /* Отключение выделения текста */
         }
 
         .game-container {
@@ -144,6 +145,19 @@
 
         // Проверка, чтобы снег не попадал на картинку
         imageElement.style.zIndex = '2';
+
+        // Запрет увеличения страницы
+        document.addEventListener('wheel', function(event) {
+            if (event.ctrlKey) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '0')) {
+                event.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>
