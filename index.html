@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finger Tap Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .image {
+            width: 200px;
+            height: 200px;
+            background: url("65656.jpg") no-repeat center center / cover;
+            border-radius: 10px;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .image:active .overlay {
+            opacity: 1;
+        }
+
+        .image:active {
+            animation: tilt 0.3s infinite alternate;
+        }
+
+        @keyframes tilt {
+            from {
+                transform: rotate(-5deg);
+            }
+            to {
+                transform: rotate(5deg);
+            }
+        }
+
+        .score {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) translateX(calc(var(--direction) * 10px)) rotate(calc(var(--tilt) * 1deg));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="image" id="image">
+            <div class="overlay"></div>
+        </div>
+        <div class="score" id="score">0</div>
+    </div>
+
+    <script>
+        // Получение очков из LocalStorage
+        let score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 0;
+        const scoreElement = document.getElementById('score');
+        const imageElement = document.getElementById('image');
+
+        // Отображение текущих очков
+        scoreElement.textContent = score;
+
+        let interval;
+        imageElement.addEventListener('mousedown', () => {
+            interval = setInterval(() => {
+                score += 1;
+                scoreElement.textContent = score;
+                localStorage.setItem('score', score);
+            }, 300);
+        });
+
+        document.addEventListener('mouseup', () => {
+            clearInterval(interval);
+        });
+
+        // Управление количеством снежинок
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.width = snowflake.style.height = Math.random() * 5 + 5 + 'px'; // размеры от 5 до 10 пикселей
+            snowflake.style.animationDuration = Math.random() * 3 + 4 + 's'; // немного замедлим
+            snowflake.style.setProperty('--direction', Math.random() * 2 - 1); // падение вправо и влево
+            snowflake.style.setProperty('--tilt', Math.random() * 2 - 1); // небольшой наклон
+            document.body.appendChild(snowflake);
+
+            // Удаление снежинки после окончания анимации
+            snowflake.addEventListener('animationend', () => {
+                snowflake.remove();
+            });
+        }
+
+        function maintainSnowflakes() {
+            const snowflakes = document.querySelectorAll('.snowflake');
+            const maxSnowflakes = 50; // Максимальное количество снежинок
+
+            if (snowflakes.length < maxSnowflakes) {
+                createSnowflake();
+            }
+        }
+
+        // Поддержание постоянного количества снежинок
+        setInterval(maintainSnowflakes, 200);
+
+        // Проверка, чтобы снег не попадал на картинку
+        imageElement.style.zIndex = '2';
+    </script>
+</body>
+</html>
