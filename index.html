@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Finger Tap Game</title>
     <style>
         body {
@@ -16,6 +16,8 @@
             overflow: hidden;
             position: relative;
             user-select: none; /* Отключение выделения текста */
+            -webkit-user-select: none; /* Отключение выделения текста для Safari */
+            -ms-user-select: none; /* Отключение выделения текста для IE/Edge */
         }
 
         .game-container {
@@ -145,6 +147,11 @@
 
         // Проверка, чтобы снег не попадал на картинку
         imageElement.style.zIndex = '2';
+
+        // Запрет копирования контента
+        document.addEventListener('copy', function(event) {
+            event.preventDefault();
+        });
 
         // Запрет увеличения страницы
         document.addEventListener('wheel', function(event) {
