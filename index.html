@@ -18,6 +18,7 @@
             user-select: none; /* Отключение выделения текста */
             -webkit-user-select: none; /* Отключение выделения текста для Safari */
             -ms-user-select: none; /* Отключение выделения текста для IE/Edge */
+            touch-action: none; /* Отключение масштабирования на мобильных устройствах */
         }
 
         .game-container {
@@ -29,7 +30,7 @@
         .image {
             width: 200px;
             height: 200px;
-            background: url("65656.jpg") no-repeat center center / cover;
+            background: url('image.jpg') no-repeat center center / cover;
             border-radius: 10px;
             position: relative;
             transition: transform 0.2s ease;
@@ -104,17 +105,24 @@
         scoreElement.textContent = score;
 
         let interval;
-        imageElement.addEventListener('mousedown', () => {
+        function startCounting() {
             interval = setInterval(() => {
                 score += 1;
                 scoreElement.textContent = score;
                 localStorage.setItem('score', score);
             }, 300);
-        });
+        }
 
-        document.addEventListener('mouseup', () => {
+        function stopCounting() {
             clearInterval(interval);
-        });
+        }
+
+        imageElement.addEventListener('mousedown', startCounting);
+        document.addEventListener('mouseup', stopCounting);
+
+        // Для мобильных устройств
+        imageElement.addEventListener('touchstart', startCounting);
+        document.addEventListener('touchend', stopCounting);
 
         // Управление количеством снежинок
         function createSnowflake() {
@@ -150,6 +158,11 @@
 
         // Запрет копирования контента
         document.addEventListener('copy', function(event) {
+            event.preventDefault();
+        });
+
+        // Запрет контекстного меню
+        document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
 
