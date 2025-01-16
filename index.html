@@ -1,183 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Finger Tap Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой VFT сайт</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background: #000;
-            overflow: hidden;
-            position: relative;
-            user-select: none; /* Отключение выделения текста */
-            -webkit-user-select: none; /* Отключение выделения текста для Safari */
-            -ms-user-select: none; /* Отключение выделения текста для IE/Edge */
-            touch-action: none; /* Отключение масштабирования на мобильных устройствах */
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
         }
-
-        .game-container {
-            text-align: center;
-            position: relative;
-            z-index: 1;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
         }
-
-        .image {
-            width: 200px;
-            height: 200px;
-            background: url("65656.jpg") no-repeat center center / cover;
-            border-radius: 10px;
-            position: relative;
-            transition: transform 0.2s ease;
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .image:active .overlay {
-            opacity: 1;
-        }
-
-        .image:active {
-            animation: tilt 0.3s infinite alternate;
-        }
-
-        @keyframes tilt {
-            from {
-                transform: rotate(-5deg);
-            }
-            to {
-                transform: rotate(5deg);
-            }
-        }
-
-        .score {
+        .menu-icon {
+            cursor: pointer;
             font-size: 24px;
-            margin-top: 20px;
-            color: #fff;
         }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            background: #fff;
+        main {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .upload-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
             border-radius: 50%;
-            opacity: 0.8;
-            animation: fall linear infinite;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) translateX(calc(var(--direction) * 10px)) rotate(calc(var(--tilt) * 1deg));
+        .hidden {
+            display: none;
+        }
+        #upload-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        aside {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            overflow-y: auto;
+        }
+        aside h2 {
+            margin-top: 0;
+        }
+        .nft-item {
+            background-color: #444;
+            padding: 10px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: calc(45% - 20px);
+            text-align: center;
+        }
+        .nft-item img {
+            max-width: 100%;
+            height: auto;
+        }
+        .nft-item.rare {
+            border: 2px solid #ff5722;
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px #ff5722;
             }
+            to {
+                box-shadow: 0 0 20px #ff5722;
+            }
+        }
+        .balance {
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .tab {
+            cursor: pointer;
+            padding: 10px;
+            flex-grow: 1;
+            text-align: center;
+            background-color: #444;
+        }
+        .tab.active {
+            background-color: #ff5722;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .input-field {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #ff5722;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #e64a19;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="image" id="image">
-            <div class="overlay"></div>
+    <header>
+        <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+        <h1>Мой VFT сайт</h1>
+    </header>
+    <main>
+        <div class="upload-button" onclick="openUploadDialog()">+</div>
+        <div id="nft-gallery"></div>
+    </main>
+    <aside id="menu">
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('wallet')">Кошелек</div>
+            <div class="tab" onclick="openTab('collection')">Моя коллекция</div>
+            <div class="tab" onclick="openTab('buy-vft')">Купить VFT</div>
         </div>
-        <div class="score" id="score">0</div>
+        <div id="wallet" class="tab-content active">
+            <h2>Мой кошелек</h2>
+            <div class="balance">Баланс: <span id="balance">0</span> VFT</div>
+            <div class="input-field">
+                <input type="text" id="code-input" placeholder="Введите код">
+                <button onclick="redeemCode()">Активировать код</button>
+            </div>
+        </div>
+        <div id="collection" class="tab-content">
+            <h2>Моя коллекция</h2>
+            <div id="my-collection"></div>
+        </div>
+        <div id="buy-vft" class="tab-content">
+            <h2>Купить VFT</h2>
+            <button onclick="contactAdmin()">Связаться с админом</button>
+        </div>
+    </aside>
+    <div id="upload-dialog" class="hidden">
+        <input type="file" id="image-input" accept="image/*">
+        <input type="number" id="price-input" placeholder="Цена в VFT">
+        <label>
+            <input type="checkbox" id="rare-input"> Редкий
+        </label>
+        <button onclick="uploadNFT()">Загрузить</button>
+        <button onclick="closeUploadDialog()">Закрыть</button>
     </div>
-
     <script>
-        // Получение очков из LocalStorage
-        let score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 0;
-        const scoreElement = document.getElementById('score');
-        const imageElement = document.getElementById('image');
+        let balance = 0;
+        const codes = ["68379", "47734", "86434", "96557", "25787", "57886"];
+        let usedCodes = [];
+        const developerCode = "465787457";
+        let isAdmin = false;
 
-        // Отображение текущих очков
-        scoreElement.textContent = score;
-
-        let interval;
-        function startCounting() {
-            interval = setInterval(() => {
-                score += 1;
-                scoreElement.textContent = score;
-                localStorage.setItem('score', score);
-            }, 300);
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        function stopCounting() {
-            clearInterval(interval);
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab[onclick="openTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
         }
 
-        imageElement.addEventListener('mousedown', startCounting);
-        document.addEventListener('mouseup', stopCounting);
-
-        // Для мобильных устройств
-        imageElement.addEventListener('touchstart', startCounting);
-        document.addEventListener('touchend', stopCounting);
-
-        // Управление количеством снежинок
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.classList.add('snowflake');
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.width = snowflake.style.height = Math.random() * 5 + 5 + 'px'; // размеры от 5 до 10 пикселей
-            snowflake.style.animationDuration = Math.random() * 3 + 4 + 's'; // немного замедлим
-            snowflake.style.setProperty('--direction', Math.random() * 2 - 1); // падение вправо и влево
-            snowflake.style.setProperty('--tilt', Math.random() * 2 - 1); // небольшой наклон
-            document.body.appendChild(snowflake);
-
-            // Удаление снежинки после окончания анимации
-            snowflake.addEventListener('animationend', () => {
-                snowflake.remove();
-            });
+        function openUploadDialog() {
+            if (balance < 100 && !isAdmin) {
+                alert('У вас недостаточно VFT для загрузки изображения. Необходимо 100 VFT.');
+                return;
+            }
+            document.getElementById('upload-dialog').classList.remove('hidden');
         }
 
-        function maintainSnowflakes() {
-            const snowflakes = document.querySelectorAll('.snowflake');
-            const maxSnowflakes = 50; // Максимальное количество снежинок
+        function closeUploadDialog() {
+            document.getElementById('upload-dialog').classList.add('hidden');
+        }
 
-            if (snowflakes.length < maxSnowflakes) {
-                createSnowflake();
+        function uploadNFT() {
+            const imageInput = document.getElementById('image-input');
+            const priceInput = document.getElementById('price-input');
+            const rareInput = document.getElementById('rare-input');
+            const gallery = document.getElementById('nft-gallery');
+
+            if (imageInput.files.length === 0 || priceInput.value === '') {
+                alert('Пожалуйста, выберите изображение и укажите цену.');
+                return;
+            }
+
+            const file = imageInput.files[0];
+            const price = priceInput.value;
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const nftElement = document.createElement('div');
+                nftElement.classList.add('nft-item');
+                if (rareInput.checked) {
+                    nftElement.classList.add('rare');
+                    nftElement.innerHTML = `<img src="${event.target.result}" alt="VFT"><p>Цена: ${price} VFT</p><p>Редкий</p><button onclick="buyNFT(this, ${price})">Купить</button>`;
+                } else {
+                    nftElement.innerHTML = `<img src="${event.target.result}" alt="VFT"><p>Цена: ${price} VFT</p><button onclick="buyNFT(this, ${price})">Купить</button>`;
+                }
+                gallery.appendChild(nftElement);
+
+                if (!isAdmin) {
+                    balance -= 100;
+                    document.getElementById('balance').textContent = balance;
+                }
+
+                closeUploadDialog();
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function buyNFT(button, price) {
+            const nftItem = button.parentElement;
+            const myCollection = document.getElementById('my-collection');
+
+            if (balance >= price) {
+                if (confirm(`Вы уверены, что хотите купить эту картинку за ${price} VFT?`)) {
+                    balance -= price;
+                    document.getElementById('balance').textContent = balance;
+
+                    const myNftElement = nftItem.cloneNode(true);
+                    myNftElement.querySelector('button').remove();
+                    myCollection.appendChild(myNftElement);
+
+                    nftItem.remove();
+                }
+            } else {
+                alert('У вас недостаточно VFT для покупки этой картинки.');
+            }
+        }
+        function buyVFT() {
+            const buyLink = 'https://example.com/buy-vft';
+            window.open(buyLink, '_blank');
+        }
+
+        function contactAdmin() {
+            const adminChatLink = 'https://example.com/admin-chat';
+            window.open(adminChatLink, '_blank');
+        }
+
+        function redeemCode() {
+            const codeInput = document.getElementById('code-input').value;
+            if (codeInput === developerCode) {
+                isAdmin = true;
+                alert('Режим разработчика активирован.');
+            } else if (codes.includes(codeInput) && !usedCodes.includes(codeInput)) {
+                balance += 100;
+                document.getElementById('balance').textContent = balance;
+                usedCodes.push(codeInput);
+                alert('Код успешно активирован! Вы получили 100 VFT.');
+            } else {
+                alert('Недействительный или уже использованный код.');
             }
         }
 
-        // Поддержание постоянного количества снежинок
-        setInterval(maintainSnowflakes, 200);
+        function addVFT(amount) {
+            balance += amount;
+            document.getElementById('balance').textContent = balance;
+        }
 
-        // Проверка, чтобы снег не попадал на картинку
-        imageElement.style.zIndex = '2';
-
-        // Запрет копирования контента
-        document.addEventListener('copy', function(event) {
-            event.preventDefault();
-        });
-
-        // Запрет контекстного меню
-        document.addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-        });
-
-        // Запрет увеличения страницы
-        document.addEventListener('wheel', function(event) {
-            if (event.ctrlKey) {
-                event.preventDefault();
-            }
-        }, { passive: false });
-
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && (event.key === '+' || event.key === '-' || event.key === '0')) {
-                event.preventDefault();
-            }
-        });
+        // Пример использования функции addVFT в консоли браузера
+        // Откройте консоль браузера и введите: addVFT(100)
+        // Это начислит 100 VFT на баланс
     </script>
 </body>
 </html>
