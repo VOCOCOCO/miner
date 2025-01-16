@@ -31,11 +31,33 @@
             border: none;
             cursor: pointer;
         }
+        #profile-link {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #create-group {
+            position: absolute;
+            top: 10px;
+            left: 100px;
+            padding: 5px 10px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="chat-container">
-        <button id="invite">Добавить</button>
+        <button id="profile-link">Мой Профиль</button>
+        <button id="create-group">Создать Группу</button>
+        <button id="invite">Пригласить</button>
         <div id="messages"></div>
         <input type="text" id="message-input" placeholder="Введите сообщение...">
         <button id="send-button">Отправить</button>
@@ -46,6 +68,8 @@
         const input = document.getElementById('message-input');
         const button = document.getElementById('send-button');
         const inviteButton = document.getElementById('invite');
+        const profileLinkButton = document.getElementById('profile-link');
+        const createGroupButton = document.getElementById('create-group');
 
         ws.onmessage = (event) => {
             const message = document.createElement('div');
@@ -64,6 +88,16 @@
             navigator.clipboard.writeText(link).then(() => {
                 alert('Ссылка на чат скопирована в буфер обмена!');
             });
+        };
+
+        profileLinkButton.onclick = () => {
+            const userId = 'yourUserId'; // Замените на идентификатор пользователя
+            window.location.href = `/profile.html?user=${userId}`;
+        };
+
+        createGroupButton.onclick = () => {
+            alert('Функция создания групп временно недоступна.');
+            // Реализуйте функционал создания групп
         };
     </script>
 </body>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя</title>
+</head>
+<body>
+    <h1>Профиль пользователя</h1>
+    <div id="profile-info">
+        <!-- Информация о пользователе будет здесь -->
+    </div>
+    <script>
+        // Получаем идентификатор пользователя из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user');
+
+        // Загружаем информацию о пользователе
+        fetch(`/api/user/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                const profileInfo = document.getElementById('profile-info');
+                profileInfo.innerHTML = `
+                    <p>Имя: ${data.name}</p>
+                    <p>Друзья: ${data.friends.join(', ')}</p>
+                `;
+            });
+    </script>
+</body>
+</html>
