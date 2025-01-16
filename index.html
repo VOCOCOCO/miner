@@ -21,10 +21,21 @@
             padding: 10px;
             width: 100%;
         }
+        #invite {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="chat-container">
+        <button id="invite">Добавить</button>
         <div id="messages"></div>
         <input type="text" id="message-input" placeholder="Введите сообщение...">
         <button id="send-button">Отправить</button>
@@ -34,6 +45,7 @@
         const messages = document.getElementById('messages');
         const input = document.getElementById('message-input');
         const button = document.getElementById('send-button');
+        const inviteButton = document.getElementById('invite');
 
         ws.onmessage = (event) => {
             const message = document.createElement('div');
@@ -45,6 +57,13 @@
             const message = input.value;
             ws.send(message);
             input.value = '';
+        };
+
+        inviteButton.onclick = () => {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка на чат скопирована в буфер обмена!');
+            });
         };
     </script>
 </body>
