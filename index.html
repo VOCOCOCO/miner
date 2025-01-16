@@ -1,309 +1,51 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой VFT сайт</title>
+    <title>Мессенджер</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #121212;
-            color: #ffffff;
-        }
-        header {
+        #chat-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
         }
-        .menu-icon {
-            cursor: pointer;
-            font-size: 24px;
-        }
-        main {
-            padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .upload-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .hidden {
-            display: none;
-        }
-        #upload-dialog {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #333;
-            padding: 20px;
+        #messages {
+            flex: 1;
+            overflow-y: scroll;
             border: 1px solid #ccc;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        aside {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 100%;
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            display: none;
-            overflow-y: auto;
-        }
-        aside h2 {
-            margin-top: 0;
-        }
-        .nft-item {
-            background-color: #444;
             padding: 10px;
-            margin: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: calc(45% - 20px);
-            text-align: center;
         }
-        .nft-item img {
-            max-width: 100%;
-            height: auto;
-        }
-        .nft-item.rare {
-            border: 2px solid #ff5722;
-            animation: glow 1s infinite alternate;
-        }
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px #ff5722;
-            }
-            to {
-                box-shadow: 0 0 20px #ff5722;
-            }
-        }
-        .balance {
-            margin-bottom: 20px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-        }
-        .tab {
-            cursor: pointer;
+        #message-input {
             padding: 10px;
-            flex-grow: 1;
-            text-align: center;
-            background-color: #444;
-        }
-        .tab.active {
-            background-color: #ff5722;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .input-field {
-            margin-bottom: 10px;
-        }
-        button {
-            background-color: #ff5722;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #e64a19;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
-        <h1>Мой VFT сайт</h1>
-    </header>
-    <main>
-        <div class="upload-button" onclick="openUploadDialog()">+</div>
-        <div id="nft-gallery"></div>
-    </main>
-    <aside id="menu">
-        <div class="tabs">
-            <div class="tab active" onclick="openTab('wallet')">Кошелек</div>
-            <div class="tab" onclick="openTab('collection')">Моя коллекция</div>
-            <div class="tab" onclick="openTab('buy-vft')">Купить VFT</div>
-        </div>
-        <div id="wallet" class="tab-content active">
-            <h2>Мой кошелек</h2>
-            <div class="balance">Баланс: <span id="balance">0</span> VFT</div>
-            <div class="input-field">
-                <input type="text" id="code-input" placeholder="Введите код">
-                <button onclick="redeemCode()">Активировать код</button>
-            </div>
-        </div>
-        <div id="collection" class="tab-content">
-            <h2>Моя коллекция</h2>
-            <div id="my-collection"></div>
-        </div>
-        <div id="buy-vft" class="tab-content">
-            <h2>Купить VFT</h2>
-            <button onclick="contactAdmin()">Связаться с админом</button>
-        </div>
-    </aside>
-    <div id="upload-dialog" class="hidden">
-        <input type="file" id="image-input" accept="image/*">
-        <input type="number" id="price-input" placeholder="Цена в VFT">
-        <label>
-            <input type="checkbox" id="rare-input"> Редкий
-        </label>
-        <button onclick="uploadNFT()">Загрузить</button>
-        <button onclick="closeUploadDialog()">Закрыть</button>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <input type="text" id="message-input" placeholder="Введите сообщение...">
+        <button id="send-button">Отправить</button>
     </div>
     <script>
-        let balance = 0;
-        const codes = ["68379", "47734", "86434", "96557", "25787", "57886"];
-        let usedCodes = [];
-        const developerCode = "465787457";
-        let isAdmin = false;
+        const ws = new WebSocket('ws://localhost:8080');
+        const messages = document.getElementById('messages');
+        const input = document.getElementById('message-input');
+        const button = document.getElementById('send-button');
 
-        function toggleMenu() {
-            const menu = document.getElementById('menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
+        ws.onmessage = (event) => {
+            const message = document.createElement('div');
+            message.textContent = event.data;
+            messages.appendChild(message);
+        };
 
-        function openTab(tabId) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            document.querySelector(`.tab[onclick="openTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        function openUploadDialog() {
-            if (balance < 100 && !isAdmin) {
-                alert('У вас недостаточно VFT для загрузки изображения. Необходимо 100 VFT.');
-                return;
-            }
-            document.getElementById('upload-dialog').classList.remove('hidden');
-        }
-
-        function closeUploadDialog() {
-            document.getElementById('upload-dialog').classList.add('hidden');
-        }
-
-        function uploadNFT() {
-            const imageInput = document.getElementById('image-input');
-            const priceInput = document.getElementById('price-input');
-            const rareInput = document.getElementById('rare-input');
-            const gallery = document.getElementById('nft-gallery');
-
-            if (imageInput.files.length === 0 || priceInput.value === '') {
-                alert('Пожалуйста, выберите изображение и укажите цену.');
-                return;
-            }
-
-            const file = imageInput.files[0];
-            const price = priceInput.value;
-            const reader = new FileReader();
-
-            reader.onload = function(event) {
-                const nftElement = document.createElement('div');
-                nftElement.classList.add('nft-item');
-                if (rareInput.checked) {
-                    nftElement.classList.add('rare');
-                    nftElement.innerHTML = `<img src="${event.target.result}" alt="VFT"><p>Цена: ${price} VFT</p><p>Редкий</p><button onclick="buyNFT(this, ${price})">Купить</button>`;
-                } else {
-                    nftElement.innerHTML = `<img src="${event.target.result}" alt="VFT"><p>Цена: ${price} VFT</p><button onclick="buyNFT(this, ${price})">Купить</button>`;
-                }
-                gallery.appendChild(nftElement);
-
-                if (!isAdmin) {
-                    balance -= 100;
-                    document.getElementById('balance').textContent = balance;
-                }
-
-                closeUploadDialog();
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        function buyNFT(button, price) {
-            const nftItem = button.parentElement;
-            const myCollection = document.getElementById('my-collection');
-
-            if (balance >= price) {
-                if (confirm(`Вы уверены, что хотите купить эту картинку за ${price} VFT?`)) {
-                    balance -= price;
-                    document.getElementById('balance').textContent = balance;
-
-                    const myNftElement = nftItem.cloneNode(true);
-                    myNftElement.querySelector('button').remove();
-                    myCollection.appendChild(myNftElement);
-
-                    nftItem.remove();
-                }
-            } else {
-                alert('У вас недостаточно VFT для покупки этой картинки.');
-            }
-        }
-        function buyVFT() {
-            const buyLink = 'https://example.com/buy-vft';
-            window.open(buyLink, '_blank');
-        }
-
-        function contactAdmin() {
-            const adminChatLink = 'https://example.com/admin-chat';
-            window.open(adminChatLink, '_blank');
-        }
-
-        function redeemCode() {
-            const codeInput = document.getElementById('code-input').value;
-            if (codeInput === developerCode) {
-                isAdmin = true;
-                alert('Режим разработчика активирован.');
-            } else if (codes.includes(codeInput) && !usedCodes.includes(codeInput)) {
-                balance += 100;
-                document.getElementById('balance').textContent = balance;
-                usedCodes.push(codeInput);
-                alert('Код успешно активирован! Вы получили 100 VFT.');
-            } else {
-                alert('Недействительный или уже использованный код.');
-            }
-        }
-
-        function addVFT(amount) {
-            balance += amount;
-            document.getElementById('balance').textContent = balance;
-        }
-
-        // Пример использования функции addVFT в консоли браузера
-        // Откройте консоль браузера и введите: addVFT(100)
-        // Это начислит 100 VFT на баланс
+        button.onclick = () => {
+            const message = input.value;
+            ws.send(message);
+            input.value = '';
+        };
     </script>
 </body>
 </html>
